@@ -1,47 +1,41 @@
 package com.ays.mma
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.ays.mma.ui.theme.MMATheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.ays.common.navigation.Graph.SIGNUP_GRAPH
+import com.ays.home.homeGraph
+import com.ays.profile.profileGraph
+import com.ays.signup.signupGraph
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            MMATheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            val intent = intent
+            MMANavHost(intent)
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun MMANavHost(intent: Intent?) {
+    val data = intent?.data
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = SIGNUP_GRAPH
+    ) {
+        signupGraph(navController)
+        homeGraph(navController)
+        profileGraph(navController)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MMATheme {
-        Greeting("Android")
+    if (data != null) {
+        navController.handleDeepLink(intent)
     }
 }
